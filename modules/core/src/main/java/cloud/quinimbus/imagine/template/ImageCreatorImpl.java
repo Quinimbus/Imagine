@@ -1,0 +1,93 @@
+package cloud.quinimbus.imagine.template;
+
+import cloud.quinimbus.imagine.api.BinaryResolutionException;
+import cloud.quinimbus.imagine.api.ImageCreator;
+import cloud.quinimbus.imagine.api.ImageTemplate;
+import cloud.quinimbus.imagine.api.TemplateStep;
+import cloud.quinimbus.imagine.color.ColorsImpl;
+import cloud.quinimbus.imagine.color.RGBAColor;
+import java.awt.Graphics2D;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import javax.imageio.ImageIO;
+
+public class ImageCreatorImpl implements ImageCreator {
+    
+    private static final ColorsImpl COLORS = new ColorsImpl();
+    
+    private final ImageTemplate template;
+
+    public ImageCreatorImpl(ImageTemplate template) {
+        this.template = template;
+    }
+    
+    @Override
+    public void createImage(Map<String, Object> parameter, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException {
+        var base = this.template.base();
+        var ctx = new CreationContext(parameter, resourceLoader, this.template);
+        var img = new BufferedImage(base.width(), base.height(), BufferedImage.TYPE_INT_ARGB);
+        var g = img.createGraphics();
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g.setColor(COLORS.decodeRGBA(base.background()).toColor());
+        g.fillRect(0, 0, base.width(), base.height());
+        for (var step : this.template.steps()) {
+            switch (step.type()) {
+                case image -> this.imageStep(g, step, ctx);
+                case hue -> this.hueStep(img, step, ctx);
+                case text -> this.textStep(g, step, ctx);
+            }
+        }
+        ImageIO.write(img, "png", os);
+    }
+
+    private void imageStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
+        var img = ctx.resolveImage(step.src());
+        var position = step.position();
+        g.drawImage(
+                img,
+                position.x().get(ctx),
+                position.y().get(ctx),
+                position.width().get(ctx),
+                position.height().get(ctx),
+                null);
+    }
+
+    private void hueStep(BufferedImage img, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
+        BiFunction<Integer, Integer, Boolean> pixelPredicate = (x, y) -> true;
+        if (step.mask() != null) {
+            switch (step.mask().type()) {
+                case image -> {
+                    var base = ctx.template().base();
+                    var maskImg = ctx.resolveImage(step.mask().src());
+                    var scaledMaskImg = new BufferedImage(base.width(), base.height(), BufferedImage.TYPE_INT_ARGB);
+                    scaledMaskImg.createGraphics().drawImage(maskImg, 0, 0, base.width(), base.height(), null);
+                    pixelPredicate = (x, y) -> RGBAColor.decode(scaledMaskImg.getRGB(x, y)).red() > 127;
+                }
+            }
+        }
+        for(var x = 0; x < img.getWidth(); x++) {
+            for (var y = 0; y < img.getHeight(); y++) {
+                if (pixelPredicate.apply(x, y)) {
+                    var color = RGBAColor.decode(img.getRGB(x, y));
+                    color = color.toHSV().withHue(step.hue().get(ctx)).toRGBA(color.alpha());
+                    img.setRGB(x, y, color.toRGB());
+                }
+            }
+        }
+    }
+
+    private void textStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
+        var textarea = step.textarea();
+        var position = step.position();
+        g.setColor(COLORS.decodeRGBA(textarea.color().get(ctx)).toColor());
+        g.setFont(ctx.resolveFont(textarea.font().get(ctx))
+                .deriveFont(textarea.fontSize().get(ctx).floatValue()));
+        g.drawString(textarea.text().get(ctx), position.x().get(ctx), position.y().get(ctx));
+    }
+}
