@@ -85,9 +85,26 @@ public class ImageCreatorImpl implements ImageCreator {
     private void textStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
         var textarea = step.textarea();
         var position = step.position();
+        var font = ctx.resolveFont(textarea.font().get(ctx))
+                .deriveFont(textarea.fontSize().get(ctx).floatValue());
+        var fontMetrics = g.getFontMetrics(font);
+        var text = textarea.text().get(ctx);
+        var stringWidth = fontMetrics.stringWidth(text);
         g.setColor(COLORS.decodeRGBA(textarea.color().get(ctx)).toColor());
-        g.setFont(ctx.resolveFont(textarea.font().get(ctx))
-                .deriveFont(textarea.fontSize().get(ctx).floatValue()));
-        g.drawString(textarea.text().get(ctx), position.x().get(ctx), position.y().get(ctx));
+        g.setFont(font);
+        var x = switch(textarea.verticalAlign().get(ctx)) {
+            case "left" -> position.x().get(ctx);
+            case "center" -> position.x().get(ctx) + position.width().get(ctx) / 2 - stringWidth / 2;
+            case "right" -> position.x().get(ctx) + position.width().get(ctx) - stringWidth;
+            default -> throw new IllegalArgumentException("Invalid vertical align: " + textarea.verticalAlign().get(ctx));
+        };
+        var y = switch(textarea.horizontalAlign().get(ctx)) {
+            case "top" -> position.y().get(ctx) + fontMetrics.getAscent();
+            case "center" -> position.y().get(ctx) + position.height().get(ctx) / 2 + fontMetrics.getAscent() / 2;
+            case "bottom" -> position.y().get(ctx) + position.height().get(ctx) - fontMetrics.getDescent();
+            default -> throw new IllegalArgumentException("Invalid horizontal align: " + textarea.horizontalAlign().get(ctx));
+        };
+        //g.drawRect(position.x().get(ctx), position.y().get(ctx), position.width().get(ctx), position.height().get(ctx));
+        g.drawString(text, x, y);
     }
 }

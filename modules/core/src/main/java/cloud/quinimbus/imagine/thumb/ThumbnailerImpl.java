@@ -44,7 +44,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                 List.of(),
                 List.of(),
                 new Base(100, 100, "#FFFFFF"),
-                List.of(new TemplateStep(
+                List.of(
+                        new TemplateStep(
                                 TemplateStep.Type.text,
                                 null,
                                 null,
@@ -53,8 +54,10 @@ public class ThumbnailerImpl implements Thumbnailer {
                                         new ResolvableStringImpl("ABCDEF"),
                                         new ResolvableStringImpl("font"),
                                         new ResolvableIntegerImpl(32),
-                                        new ResolvableStringImpl("#000000")),
-                                new Position(15, 30, 500, 500)),
+                                        new ResolvableStringImpl("#000000"),
+                                        new ResolvableStringImpl("left"),
+                                        new ResolvableStringImpl("top")),
+                                new Position(0, 0, 100, 100)),
                         new TemplateStep(
                                 TemplateStep.Type.text,
                                 null,
@@ -64,8 +67,10 @@ public class ThumbnailerImpl implements Thumbnailer {
                                         new ResolvableStringImpl("abcdef"),
                                         new ResolvableStringImpl("font"),
                                         new ResolvableIntegerImpl(32),
-                                        new ResolvableStringImpl("#000000")),
-                                new Position(15, 60, 500, 500))
+                                        new ResolvableStringImpl("#000000"),
+                                        new ResolvableStringImpl("left"),
+                                        new ResolvableStringImpl("bottom")),
+                                new Position(0, 0, 100, 100))
                 ));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();

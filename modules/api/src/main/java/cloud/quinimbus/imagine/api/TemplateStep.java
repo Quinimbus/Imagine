@@ -14,7 +14,7 @@ public record TemplateStep(Type type, String src, ResolvableInteger hue, ImageMa
         image
     }
     
-    public static record Textarea(ResolvableString text, ResolvableString font, ResolvableInteger fontSize, ResolvableString color) {
+    public static record Textarea(ResolvableString text, ResolvableString font, ResolvableInteger fontSize, ResolvableString color, ResolvableString verticalAlign, ResolvableString horizontalAlign) {
         
     }
     
