@@ -1,6 +1,8 @@
 package cloud.quinimbus.imagine.template.resolve;
 
+import cloud.quinimbus.imagine.api.FunctionResolver;
 import cloud.quinimbus.imagine.api.Resolver;
+import cloud.quinimbus.imagine.api.VarResolver;
 import cloud.quinimbus.imagine.template.resolve.source.ResolvableJsonNodeSource;
 import cloud.quinimbus.imagine.template.resolve.source.ResolvableNumberSource;
 import cloud.quinimbus.imagine.template.resolve.source.ResolvableSource;
@@ -9,13 +11,14 @@ import com.fasterxml.jackson.databind.JsonNode;
 import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 
-public abstract sealed class Resolvable<T> permits ResolvableStringImpl, ResolvableIntegerImpl {
+public abstract sealed class Resolvable<T> permits ResolvableStringImpl, ResolvableIntegerImpl, ResolvableDoubleImpl {
 
     private static final Pattern SIMPLE_VAR_REGEX = Pattern.compile("\\$(\\w+)");
     private static final Pattern EXTENDED_VAR_REGEX = Pattern.compile("\\$\\{([\\w;:\\->]+)\\}");
     private static final Pattern EXTENDED_SIMPLE_VAR_REGEX = Pattern.compile("^(\\w+)$");
     private static final Pattern EXTENDED_SWITCH_VAR_REGEX = Pattern.compile("(\\w+):((\\w+->[^;]*(;|$))*)");
     private static final Pattern EXTENDED_SWITCH_VAR_RESOLVER_REGEX = Pattern.compile("(\\w+)->([^;]*)");
+    private static final Pattern FUNCTION_CALL = Pattern.compile("#(\\w+)\\(([^\\)]+)\\)");
 
     private final ResolvableSource source;
 
@@ -27,7 +30,7 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
         this.source = new ResolvableStringSource(source);
     }
 
-    public Resolvable(Integer source) {
+    public Resolvable(Number source) {
         this.source = new ResolvableNumberSource(source);
     }
 
@@ -37,12 +40,26 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
 
     public T get(Resolver resolver) {
         if (this.source.isTextual()) {
-            return this.convert(resolveExtendedVars(resolveSimpleVars(source.getText(), resolver), resolver));
+            return this.convert(
+                    resolveFunctionCalls(
+                            resolveExtendedVars(
+                                    resolveSimpleVars(
+                                            source.getText(),
+                                            resolver),
+                                    resolver),
+                            resolver));
         }
         return this.convert(this.source);
     }
 
-    private static String resolveSimpleVars(String sourceStr, Resolver resolver) {
+    public boolean isEmpty(Resolver resolver) {
+        if (this.source.isTextual()) {
+            return source.getText() == null || source.getText().isEmpty();
+        }
+        return false;
+    }
+
+    private static String resolveSimpleVars(String sourceStr, VarResolver resolver) {
         var resultBuilder = new StringBuilder();
         var lastIndex = 0;
         var simpleVarMatcher = SIMPLE_VAR_REGEX.matcher(sourceStr);
@@ -61,7 +78,7 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
         return resultBuilder.toString();
     }
 
-    private static String resolveExtendedVars(String sourceStr, Resolver resolver) {
+    private static String resolveExtendedVars(String sourceStr, VarResolver resolver) {
         var resultBuilder = new StringBuilder();
         var lastIndex = 0;
         var extendedVarMatcher = EXTENDED_VAR_REGEX.matcher(sourceStr);
@@ -97,6 +114,23 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
                 }
             }
             lastIndex = extendedVarMatcher.end();
+        }
+        resultBuilder.append(sourceStr.substring(lastIndex));
+        return resultBuilder.toString();
+    }
+    
+    private static String resolveFunctionCalls(String sourceStr, FunctionResolver resolver) {
+        var resultBuilder = new StringBuilder();
+        var lastIndex = 0;
+        var functionCallMatcher = FUNCTION_CALL.matcher(sourceStr);
+        while (functionCallMatcher.find()) {
+            resultBuilder.append(sourceStr.substring(lastIndex, functionCallMatcher.start()));
+            var functionName = functionCallMatcher.group(1);
+            var resolved = resolver.resolveFunction(functionName)
+                    .map(func -> func.apply(functionCallMatcher.group(2)))
+                    .orElseGet(() -> "missing function: %s".formatted(functionName));
+            resultBuilder.append(resolved);
+            lastIndex = functionCallMatcher.end();
         }
         resultBuilder.append(sourceStr.substring(lastIndex));
         return resultBuilder.toString();

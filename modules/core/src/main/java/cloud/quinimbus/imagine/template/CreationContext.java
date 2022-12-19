@@ -18,6 +18,8 @@ public class CreationContext implements Resolver {
     
     private final Map<String, Object> parameter;
     
+    private final Map<String, Function<String, String>> functions;
+    
     private final Function<String, InputStream> resourceLoader;
     
     private final ImageTemplate template;
@@ -26,8 +28,9 @@ public class CreationContext implements Resolver {
     
     private final ThrowingMap<String, Font, BinaryResolutionException> loadedFonts = ThrowingMap.empty(BinaryResolutionException.class);
 
-    public CreationContext(Map<String, Object> parameter, Function<String, InputStream> resourceLoader, ImageTemplate template) {
+    public CreationContext(Map<String, Object> parameter, Map<String, Function<String, String>> functions, Function<String, InputStream> resourceLoader, ImageTemplate template) {
         this.parameter = parameter;
+        this.functions = functions;
         this.resourceLoader = resourceLoader;
         this.template = template;
     }
@@ -70,6 +73,14 @@ public class CreationContext implements Resolver {
     public Optional<Object> resolveVar(String name) {
         if (this.parameter.containsKey(name)) {
             return Optional.ofNullable(this.parameter.get(name));
+        }
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<Function<String, String>> resolveFunction(String name) {
+        if (this.functions.containsKey(name)) {
+            return Optional.ofNullable(this.functions.get(name));
         }
         return Optional.empty();
     }

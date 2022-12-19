@@ -1,5 +1,6 @@
 package cloud.quinimbus.imagine.template.resolve;
 
+import cloud.quinimbus.imagine.api.Resolver;
 import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Assertions;
@@ -15,6 +16,7 @@ public class ResolverTest {
         assertResolveString("Hello $name", Map.of(), "Hello $name");
         assertResolveString("${var:1->one;2->two}", Map.of("var", "1"), "one");
         assertResolveString("${var:1->one;2->two}", Map.of("var", "2"), "two");
+        assertResolveString("#uppercase($var)", Map.of("var", "Test"), "TEST");
     }
     
     @Test
@@ -24,11 +26,14 @@ public class ResolverTest {
     
     public void assertResolveString(String str, Map<String, Object> params, String expected) {
         var res = new ResolvableStringImpl(str);
-        Assertions.assertEquals(expected, res.get(v -> Optional.ofNullable(params.get(v))));
+        Assertions.assertEquals(expected, res.get(Resolver.of(v -> Optional.ofNullable(params.get(v)), f -> switch(f) {
+            case "uppercase" -> Optional.of(String::toUpperCase);
+            default -> Optional.empty();
+        })));
     }
     
     public void assertResolveInteger(String str, Map<String, Object> params, Integer expected) {
         var res = new ResolvableIntegerImpl(str);
-        Assertions.assertEquals(expected, res.get(v -> Optional.ofNullable(params.get(v))));
+        Assertions.assertEquals(expected, res.get(Resolver.of(v -> Optional.ofNullable(params.get(v)))));
     }
-}
+    }

@@ -8,5 +8,5 @@ import java.util.function.Function;
 
 public interface ImageCreator {
     
-    void createImage(Map<String, Object> parameter, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException;
+    void createImage(Map<String, Object> parameter, Map<String, Function<String, String>> functions, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException;
 }

@@ -34,7 +34,7 @@ public class ThumbnailerImpl implements Thumbnailer {
                 ));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
-        creator.createImage(Map.of(), bos, id -> is);
+        creator.createImage(Map.of(), Map.of(), bos, id -> is);
         return bos.toByteArray();
     }
 
@@ -74,7 +74,7 @@ public class ThumbnailerImpl implements Thumbnailer {
                 ));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
-        creator.createImage(Map.of(), bos, id -> is);
+        creator.createImage(Map.of(), Map.of(), bos, id -> is);
         return bos.toByteArray();
     }
 }

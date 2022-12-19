@@ -28,9 +28,9 @@ public class ImageCreatorImpl implements ImageCreator {
     }
     
     @Override
-    public void createImage(Map<String, Object> parameter, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException {
+    public void createImage(Map<String, Object> parameter, Map<String, Function<String, String>> functions, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException {
         var base = this.template.base();
-        var ctx = new CreationContext(parameter, resourceLoader, this.template);
+        var ctx = new CreationContext(parameter, functions, resourceLoader, this.template);
         var img = new BufferedImage(base.width(), base.height(), BufferedImage.TYPE_INT_ARGB);
         var g = img.createGraphics();
         g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
@@ -77,10 +77,10 @@ public class ImageCreatorImpl implements ImageCreator {
                     var color = RGBAColor.decode(img.getRGB(x, y));
                     color = color.toHSV().withHue(step.hue().get(ctx)).toRGBA(color.alpha());
                     img.setRGB(x, y, color.toRGB());
+                    }
+                    }
+                    }
                 }
-            }
-        }
-    }
 
     private void textStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
         var textarea = step.textarea();
