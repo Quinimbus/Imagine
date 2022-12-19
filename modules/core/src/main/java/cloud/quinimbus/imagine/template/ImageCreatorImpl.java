@@ -74,13 +74,22 @@ public class ImageCreatorImpl implements ImageCreator {
         for(var x = 0; x < img.getWidth(); x++) {
             for (var y = 0; y < img.getHeight(); y++) {
                 if (pixelPredicate.apply(x, y)) {
-                    var color = RGBAColor.decode(img.getRGB(x, y));
-                    color = color.toHSV().withHue(step.hue().get(ctx)).toRGBA(color.alpha());
-                    img.setRGB(x, y, color.toRGB());
+                    var rgbaColor = RGBAColor.decode(img.getRGB(x, y));
+                    var hsvColor = rgbaColor.toHSV();
+                    if (step.hue() != null && !step.hue().isEmpty(ctx)) {
+                        hsvColor = hsvColor.withHue(step.hue().get(ctx));
                     }
+                    if (step.saturationModifier()!= null && !step.saturationModifier().isEmpty(ctx)) {
+                        hsvColor = hsvColor.withSaturation(hsvColor.saturation() * step.saturationModifier().get(ctx));
                     }
+                    if (step.valueModifier()!= null && !step.valueModifier().isEmpty(ctx)) {
+                        hsvColor = hsvColor.withValue(hsvColor.value()* step.valueModifier().get(ctx));
                     }
+                    img.setRGB(x, y, hsvColor.toRGBA(rgbaColor.alpha()).toRGB());
                 }
+            }
+        }
+    }
 
     private void textStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
         var textarea = step.textarea();

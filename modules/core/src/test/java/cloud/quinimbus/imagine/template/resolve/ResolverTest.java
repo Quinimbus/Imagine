@@ -24,6 +24,11 @@ public class ResolverTest {
         assertResolveInteger("$n", Map.of("n", 1), 1);
     }
     
+    @Test
+    public void testResolveDouble() {
+        assertResolveDouble("$n", Map.of("n", 1.5), 1.5);
+    }
+    
     public void assertResolveString(String str, Map<String, Object> params, String expected) {
         var res = new ResolvableStringImpl(str);
         Assertions.assertEquals(expected, res.get(Resolver.of(v -> Optional.ofNullable(params.get(v)), f -> switch(f) {
@@ -36,4 +41,9 @@ public class ResolverTest {
         var res = new ResolvableIntegerImpl(str);
         Assertions.assertEquals(expected, res.get(Resolver.of(v -> Optional.ofNullable(params.get(v)))));
     }
+    
+    public void assertResolveDouble(String str, Map<String, Object> params, Double expected) {
+        var res = new ResolvableDoubleImpl(str);
+        Assertions.assertEquals(expected, res.get(Resolver.of(v -> Optional.ofNullable(params.get(v)))));
     }
+}

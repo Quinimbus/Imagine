@@ -30,6 +30,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                 null,
                                 null,
                                 null,
+                                null,
+                                null,
                                 new Position(0, 0, 200, 200))
                 ));
         var creator = new ImageCreatorImpl(template);
@@ -50,6 +52,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                 null,
                                 null,
                                 null,
+                                null,
+                                null,
                                 new cloud.quinimbus.imagine.api.TemplateStep.Textarea(
                                         new ResolvableStringImpl("ABCDEF"),
                                         new ResolvableStringImpl("font"),
@@ -60,6 +64,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                 new Position(0, 0, 100, 100)),
                         new TemplateStep(
                                 TemplateStep.Type.text,
+                                null,
+                                null,
                                 null,
                                 null,
                                 null,

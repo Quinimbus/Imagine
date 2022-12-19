@@ -1,5 +1,6 @@
 package cloud.quinimbus.imagine.template.resolve;
 
+import cloud.quinimbus.imagine.api.ResolvableDouble;
 import cloud.quinimbus.imagine.api.ResolvableInteger;
 import cloud.quinimbus.imagine.api.ResolvableString;
 import com.fasterxml.jackson.core.JsonParser;
@@ -30,5 +31,6 @@ public class ResolvableModule extends SimpleModule {
     public ResolvableModule() {
         this.addDeserializer(ResolvableString.class, new SimpleJsonNodeSerializer<>(ResolvableStringImpl::new));
         this.addDeserializer(ResolvableInteger.class, new SimpleJsonNodeSerializer<>(ResolvableIntegerImpl::new));
+        this.addDeserializer(ResolvableDouble.class, new SimpleJsonNodeSerializer<>(ResolvableDoubleImpl::new));
     }
 }

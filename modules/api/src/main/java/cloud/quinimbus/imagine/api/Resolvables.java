@@ -14,5 +14,9 @@ public interface Resolvables {
     
     ResolvableInteger integer(String value);
     
+    ResolvableDouble asDouble(double value);
+    
+    ResolvableDouble asDouble(String value);
+    
     ResolvableString string(String value);
 }

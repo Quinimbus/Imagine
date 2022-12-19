@@ -1,8 +1,8 @@
 package cloud.quinimbus.imagine.api;
 
-public interface ResolvableString {
+public interface ResolvableDouble {
     
-    String get(Resolver resolver);
+    Double get(Resolver resolver);
     
     boolean isEmpty(Resolver resolver);
 }
