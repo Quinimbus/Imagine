@@ -94,11 +94,64 @@ public class ImageCreatorImpl implements ImageCreator {
     private void textStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
         var textarea = step.textarea();
         var position = step.position();
+        var fontSize = textarea.fontSize().get(ctx);
         var font = ctx.resolveFont(textarea.font().get(ctx))
-                .deriveFont(textarea.fontSize().get(ctx).floatValue());
+                .deriveFont(fontSize.floatValue());
         var fontMetrics = g.getFontMetrics(font);
         var text = textarea.text().get(ctx);
         var stringWidth = fontMetrics.stringWidth(text);
+        var stringHeight = fontMetrics.getHeight();
+        if (TemplateStep.ScaleMethod.adjustFontSize.equals(step.autoScale().method())) {
+            boolean scaledDown = false;
+            if (step.autoScale().scaleDown()) {
+                if (step.autoScale().scaleOnWidth()) {
+                    while (stringWidth > position.width().get(ctx) && fontSize > 1) {
+                        fontSize--;
+                        scaledDown = true;
+                        font = font.deriveFont(fontSize.floatValue());
+                        fontMetrics = g.getFontMetrics(font);
+                        stringWidth = fontMetrics.stringWidth(text);
+                    }
+                }
+                if (step.autoScale().scaleOnHeight()) {
+                    while (stringHeight > position.height().get(ctx) && fontSize > 1) {
+                        fontSize--;
+                        scaledDown = true;
+                        font = font.deriveFont(fontSize.floatValue());
+                        fontMetrics = g.getFontMetrics(font);
+                        stringHeight = fontMetrics.getHeight();
+                    }
+                }
+            }
+            if (!scaledDown && step.autoScale().scaleUp()) {
+                if (step.autoScale().scaleOnWidth()) {
+                    var scaledUp = false;
+                    while (stringWidth < position.width().get(ctx) && fontSize < 1000) {
+                        fontSize++;
+                        scaledUp = true;
+                        font = font.deriveFont(fontSize.floatValue());
+                        fontMetrics = g.getFontMetrics(font);
+                        stringWidth = fontMetrics.stringWidth(text);
+                    }
+                    if (scaledUp) {
+                        fontSize--;
+                    }
+                }
+                if (step.autoScale().scaleOnHeight()) {
+                    var scaledUp = false;
+                    while (stringHeight < position.height().get(ctx) && fontSize < 1000) {
+                        fontSize++;
+                        scaledUp = true;
+                        font = font.deriveFont(fontSize.floatValue());
+                        fontMetrics = g.getFontMetrics(font);
+                        stringHeight = fontMetrics.getHeight();
+                    }
+                    if (scaledUp) {
+                        fontSize--;
+                    }
+                }
+            }
+        }
         g.setColor(COLORS.decodeRGBA(textarea.color().get(ctx)).toColor());
         g.setFont(font);
         var x = switch(textarea.verticalAlign().get(ctx)) {

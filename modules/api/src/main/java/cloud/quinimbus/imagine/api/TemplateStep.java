@@ -1,6 +1,6 @@
 package cloud.quinimbus.imagine.api;
 
-public record TemplateStep(Type type, String src, ResolvableDouble hue, ResolvableDouble saturationModifier, ResolvableDouble valueModifier, ImageMask mask, Textarea textarea, Position position) {
+public record TemplateStep(Type type, String src, ResolvableDouble hue, ResolvableDouble saturationModifier, ResolvableDouble valueModifier, ImageMask mask, Textarea textarea, Position position, AutoScale autoScale) {
     
     public static enum Type {
         image, hue, text
@@ -26,5 +26,13 @@ public record TemplateStep(Type type, String src, ResolvableDouble hue, Resolvab
                     Resolvables.get().integer(width),
                     Resolvables.get().integer(height));
         }
+    }
+    
+    public static record AutoScale(ScaleMethod method, Boolean scaleOnWidth, Boolean scaleOnHeight, Boolean scaleDown, Boolean scaleUp) {
+        
+    }
+    
+    public static enum ScaleMethod {
+        none, adjustFontSize
     }
 }

@@ -5,6 +5,7 @@ import cloud.quinimbus.imagine.api.ImageTemplate.Base;
 import cloud.quinimbus.imagine.api.TemplateStep;
 import cloud.quinimbus.imagine.api.TemplateStep.Position;
 import cloud.quinimbus.imagine.api.BinaryResolutionException;
+import cloud.quinimbus.imagine.api.TemplateStep.AutoScale;
 import cloud.quinimbus.imagine.api.Thumbnailer;
 import cloud.quinimbus.imagine.template.ImageCreatorImpl;
 import cloud.quinimbus.imagine.template.resolve.ResolvableIntegerImpl;
@@ -32,7 +33,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                 null,
                                 null,
                                 null,
-                                new Position(0, 0, 200, 200))
+                                new Position(0, 0, 200, 200),
+                                null)
                 ));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
@@ -61,7 +63,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                         new ResolvableStringImpl("#000000"),
                                         new ResolvableStringImpl("left"),
                                         new ResolvableStringImpl("top")),
-                                new Position(0, 0, 100, 100)),
+                                new Position(0, 0, 100, 100),
+                                new AutoScale(TemplateStep.ScaleMethod.none, true, true, true, true)),
                         new TemplateStep(
                                 TemplateStep.Type.text,
                                 null,
@@ -76,7 +79,8 @@ public class ThumbnailerImpl implements Thumbnailer {
                                         new ResolvableStringImpl("#000000"),
                                         new ResolvableStringImpl("left"),
                                         new ResolvableStringImpl("bottom")),
-                                new Position(0, 0, 100, 100))
+                                new Position(0, 0, 100, 100),
+                                new AutoScale(TemplateStep.ScaleMethod.none, true, true, true, true))
                 ));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
