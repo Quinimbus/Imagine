@@ -47,7 +47,7 @@ public class ImageCreatorImpl implements ImageCreator {
     }
 
     private void imageStep(Graphics2D g, TemplateStep step, CreationContext ctx) throws BinaryResolutionException {
-        var img = ctx.resolveImage(step.src());
+        var img = ctx.resolveImage(step.src().get(ctx));
         var position = step.position();
         g.drawImage(
                 img,

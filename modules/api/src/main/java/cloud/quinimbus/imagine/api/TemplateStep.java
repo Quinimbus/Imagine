@@ -1,6 +1,6 @@
 package cloud.quinimbus.imagine.api;
 
-public record TemplateStep(Type type, String src, ResolvableDouble hue, ResolvableDouble saturationModifier, ResolvableDouble valueModifier, ImageMask mask, Textarea textarea, Position position, AutoScale autoScale) {
+public record TemplateStep(Type type, ResolvableString src, ResolvableDouble hue, ResolvableDouble saturationModifier, ResolvableDouble valueModifier, ImageMask mask, Textarea textarea, Position position, AutoScale autoScale) {
     
     public static enum Type {
         image, hue, text

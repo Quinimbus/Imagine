@@ -45,7 +45,7 @@ public class ThumbnailerImpl implements Thumbnailer {
                 List.of(
                         new TemplateStep(
                                 TemplateStep.Type.image,
-                                "img",
+                                new ResolvableStringImpl("img"),
                                 null,
                                 null,
                                 null,
