@@ -16,7 +16,7 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
     private static final Pattern SIMPLE_VAR_REGEX = Pattern.compile("\\$(\\w+)");
     private static final Pattern EXTENDED_VAR_REGEX = Pattern.compile("\\$\\{([\\w;:\\->]+)\\}");
     private static final Pattern EXTENDED_SIMPLE_VAR_REGEX = Pattern.compile("^(\\w+)$");
-    private static final Pattern EXTENDED_SWITCH_VAR_REGEX = Pattern.compile("(\\w+):(([\\w-]+->[^;]*(;|$))*)");
+    private static final Pattern EXTENDED_SWITCH_VAR_REGEX = Pattern.compile("([\\w-]+):(([\\w-]+->[^;]*(;|$))*)");
     private static final Pattern EXTENDED_SWITCH_VAR_RESOLVER_REGEX = Pattern.compile("([\\w-]+)->([^;]*)");
     private static final Pattern FUNCTION_CALL = Pattern.compile("#(\\w+)\\(([^\\)]+)\\)");
 

@@ -16,6 +16,9 @@ public class ResolverTest {
         assertResolveString("Hello $name", Map.of(), "Hello $name");
         assertResolveString("${var:1->one;2->two}", Map.of("var", "1"), "one");
         assertResolveString("${var:1->one;2->two}", Map.of("var", "2"), "two");
+        assertResolveString("${37ffe6c4-94da-49e7-a14b-61125ea7e821:1->one;2->two}", Map.of("37ffe6c4-94da-49e7-a14b-61125ea7e821", "2"), "two");
+        assertResolveString("${37ffe6c4-94da-49e7-a14b-61125ea7e821:1->ce3c6d0d-c429-4d01-beff-95650594fb58;2->3c949c37-03e1-4271-8ef2-1b9563424f8b}", Map.of("37ffe6c4-94da-49e7-a14b-61125ea7e821", "2"), "3c949c37-03e1-4271-8ef2-1b9563424f8b");
+        assertResolveString("${37ffe6c4-94da-49e7-a14b-61125ea7e821:b1601e8d-100a-4706-ac34-71c1e0089bbd->ce3c6d0d-c429-4d01-beff-95650594fb58;2f5384b8-ebb5-43d8-abf5-a8b57a9f2353->3c949c37-03e1-4271-8ef2-1b9563424f8b}", Map.of("37ffe6c4-94da-49e7-a14b-61125ea7e821", "2f5384b8-ebb5-43d8-abf5-a8b57a9f2353"), "3c949c37-03e1-4271-8ef2-1b9563424f8b");
         assertResolveString("#uppercase($var)", Map.of("var", "Test"), "TEST");
     }
     
