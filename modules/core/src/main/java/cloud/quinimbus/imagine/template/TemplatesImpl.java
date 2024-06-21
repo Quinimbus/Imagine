@@ -10,5 +10,4 @@ public class TemplatesImpl implements Templates {
     public ImageCreator newImageCreator(ImageTemplate template) {
         return new ImageCreatorImpl(template);
     }
-    
 }

@@ -31,5 +31,4 @@ public class ResolvablesImpl implements Resolvables {
     public ResolvableDouble asDouble(String value) {
         return new ResolvableDoubleImpl(value);
     }
-    
 }

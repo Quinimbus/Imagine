@@ -1,19 +1,19 @@
 package cloud.quinimbus.imagine.color;
 
 public record HSVColor(double hue, double saturation, double value) implements cloud.quinimbus.imagine.api.HSVColor {
-    
+
     public HSVColor withHue(double hue) {
         return new HSVColor(hue, this.saturation, this.value);
     }
-    
+
     public HSVColor withSaturation(double saturation) {
         return new HSVColor(this.hue, saturation, this.value);
     }
-    
+
     public HSVColor withValue(double value) {
         return new HSVColor(this.hue, this.saturation, value);
     }
-    
+
     public RGBAColor toRGBA(int alpha) {
         var c = this.saturation * this.value;
         var x = c * (1 - Math.abs((this.hue / 60) % 2 - 1));

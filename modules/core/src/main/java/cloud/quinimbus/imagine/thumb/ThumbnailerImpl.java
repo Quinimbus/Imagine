@@ -1,11 +1,11 @@
 package cloud.quinimbus.imagine.thumb;
 
+import cloud.quinimbus.imagine.api.BinaryResolutionException;
 import cloud.quinimbus.imagine.api.ImageTemplate;
 import cloud.quinimbus.imagine.api.ImageTemplate.Base;
 import cloud.quinimbus.imagine.api.TemplateStep;
-import cloud.quinimbus.imagine.api.TemplateStep.Position;
-import cloud.quinimbus.imagine.api.BinaryResolutionException;
 import cloud.quinimbus.imagine.api.TemplateStep.AutoScale;
+import cloud.quinimbus.imagine.api.TemplateStep.Position;
 import cloud.quinimbus.imagine.api.Thumbnailer;
 import cloud.quinimbus.imagine.template.ImageCreatorImpl;
 import cloud.quinimbus.imagine.template.resolve.ResolvableIntegerImpl;
@@ -28,7 +28,7 @@ public class ThumbnailerImpl implements Thumbnailer {
         if (height == null || width == null) {
             var imgBytes = is.readAllBytes();
             var img = ImageIO.read(new ByteArrayInputStream(imgBytes));
-            var aspectRatio = (float)img.getWidth() / img.getHeight();
+            var aspectRatio = (float) img.getWidth() / img.getHeight();
             if (params.width() == null) {
                 width = Math.round(height * aspectRatio);
             } else {
@@ -42,18 +42,16 @@ public class ThumbnailerImpl implements Thumbnailer {
                 List.of(),
                 List.of(),
                 new Base(width, height, "#FFFFFF"),
-                List.of(
-                        new TemplateStep(
-                                TemplateStep.Type.image,
-                                new ResolvableStringImpl("img"),
-                                null,
-                                null,
-                                null,
-                                null,
-                                null,
-                                new Position(0, 0, width, height),
-                                null)
-                ));
+                List.of(new TemplateStep(
+                        TemplateStep.Type.image,
+                        new ResolvableStringImpl("img"),
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        new Position(0, 0, width, height),
+                        null)));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
         creator.createImage(Map.of(), Map.of(), bos, id -> imgIs);
@@ -98,8 +96,7 @@ public class ThumbnailerImpl implements Thumbnailer {
                                         new ResolvableStringImpl("left"),
                                         new ResolvableStringImpl("bottom")),
                                 new Position(0, 0, params.width(), params.height()),
-                                new AutoScale(TemplateStep.ScaleMethod.none, true, true, true, true))
-                ));
+                                new AutoScale(TemplateStep.ScaleMethod.none, true, true, true, true))));
         var creator = new ImageCreatorImpl(template);
         var bos = new ByteArrayOutputStream();
         creator.createImage(Map.of(), Map.of(), bos, id -> is);

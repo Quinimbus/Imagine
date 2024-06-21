@@ -40,14 +40,8 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
 
     public T get(Resolver resolver) {
         if (this.source.isTextual()) {
-            return this.convert(
-                    resolveFunctionCalls(
-                            resolveExtendedVars(
-                                    resolveSimpleVars(
-                                            source.getText(),
-                                            resolver),
-                                    resolver),
-                            resolver));
+            return this.convert(resolveFunctionCalls(
+                    resolveExtendedVars(resolveSimpleVars(source.getText(), resolver), resolver), resolver));
         }
         return this.convert(this.source);
     }
@@ -100,7 +94,8 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
                     var varName = extendedSwitchVar.group(1);
                     var resolved = resolver.resolveVar(varName);
                     if (resolved.isPresent()) {
-                        var extendedSwitchResolverVar = EXTENDED_SWITCH_VAR_RESOLVER_REGEX.matcher(extendedSwitchVar.group(2));
+                        var extendedSwitchResolverVar =
+                                EXTENDED_SWITCH_VAR_RESOLVER_REGEX.matcher(extendedSwitchVar.group(2));
                         var switchMap = new LinkedHashMap<String, String>();
                         while (extendedSwitchResolverVar.find()) {
                             switchMap.put(extendedSwitchResolverVar.group(1), extendedSwitchResolverVar.group(2));
@@ -118,7 +113,7 @@ public abstract sealed class Resolvable<T> permits ResolvableStringImpl, Resolva
         resultBuilder.append(sourceStr.substring(lastIndex));
         return resultBuilder.toString();
     }
-    
+
     private static String resolveFunctionCalls(String sourceStr, FunctionResolver resolver) {
         var resultBuilder = new StringBuilder();
         var lastIndex = 0;

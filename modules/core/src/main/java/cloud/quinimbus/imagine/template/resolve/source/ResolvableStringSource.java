@@ -1,7 +1,7 @@
 package cloud.quinimbus.imagine.template.resolve.source;
 
 public class ResolvableStringSource implements ResolvableSource<String> {
-    
+
     private final String str;
 
     public ResolvableStringSource(String str) {

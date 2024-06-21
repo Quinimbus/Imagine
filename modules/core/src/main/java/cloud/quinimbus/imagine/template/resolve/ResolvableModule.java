@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.util.function.Function;
 
 public class ResolvableModule extends SimpleModule {
-    
+
     private class SimpleJsonNodeSerializer<T> extends JsonDeserializer<T> {
-        
+
         private final Function<JsonNode, T> converter;
 
         public SimpleJsonNodeSerializer(Function<JsonNode, T> converter) {

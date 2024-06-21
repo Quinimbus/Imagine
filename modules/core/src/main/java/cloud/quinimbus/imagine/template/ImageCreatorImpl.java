@@ -18,17 +18,22 @@ import java.util.function.Function;
 import javax.imageio.ImageIO;
 
 public class ImageCreatorImpl implements ImageCreator {
-    
+
     private static final ColorsImpl COLORS = new ColorsImpl();
-    
+
     private final ImageTemplate template;
 
     public ImageCreatorImpl(ImageTemplate template) {
         this.template = template;
     }
-    
+
     @Override
-    public void createImage(Map<String, Object> parameter, Map<String, Function<String, String>> functions, OutputStream os, Function<String, InputStream> resourceLoader) throws IOException, BinaryResolutionException {
+    public void createImage(
+            Map<String, Object> parameter,
+            Map<String, Function<String, String>> functions,
+            OutputStream os,
+            Function<String, InputStream> resourceLoader)
+            throws IOException, BinaryResolutionException {
         var base = this.template.base();
         var ctx = new CreationContext(parameter, functions, resourceLoader, this.template);
         var img = new BufferedImage(base.width(), base.height(), BufferedImage.TYPE_INT_ARGB);
@@ -67,11 +72,12 @@ public class ImageCreatorImpl implements ImageCreator {
                     var maskImg = ctx.resolveImage(step.mask().src());
                     var scaledMaskImg = new BufferedImage(base.width(), base.height(), BufferedImage.TYPE_INT_ARGB);
                     scaledMaskImg.createGraphics().drawImage(maskImg, 0, 0, base.width(), base.height(), null);
-                    pixelPredicate = (x, y) -> RGBAColor.decode(scaledMaskImg.getRGB(x, y)).red() > 127;
+                    pixelPredicate = (x, y) ->
+                            RGBAColor.decode(scaledMaskImg.getRGB(x, y)).red() > 127;
                 }
             }
         }
-        for(var x = 0; x < img.getWidth(); x++) {
+        for (var x = 0; x < img.getWidth(); x++) {
             for (var y = 0; y < img.getHeight(); y++) {
                 if (pixelPredicate.apply(x, y)) {
                     var rgbaColor = RGBAColor.decode(img.getRGB(x, y));
@@ -79,11 +85,14 @@ public class ImageCreatorImpl implements ImageCreator {
                     if (step.hue() != null && !step.hue().isEmpty(ctx)) {
                         hsvColor = hsvColor.withHue(step.hue().get(ctx));
                     }
-                    if (step.saturationModifier()!= null && !step.saturationModifier().isEmpty(ctx)) {
-                        hsvColor = hsvColor.withSaturation(hsvColor.saturation() * step.saturationModifier().get(ctx));
+                    if (step.saturationModifier() != null
+                            && !step.saturationModifier().isEmpty(ctx)) {
+                        hsvColor = hsvColor.withSaturation(hsvColor.saturation()
+                                * step.saturationModifier().get(ctx));
                     }
-                    if (step.valueModifier()!= null && !step.valueModifier().isEmpty(ctx)) {
-                        hsvColor = hsvColor.withValue(hsvColor.value()* step.valueModifier().get(ctx));
+                    if (step.valueModifier() != null && !step.valueModifier().isEmpty(ctx)) {
+                        hsvColor = hsvColor.withValue(
+                                hsvColor.value() * step.valueModifier().get(ctx));
                     }
                     img.setRGB(x, y, hsvColor.toRGBA(rgbaColor.alpha()).toRGB());
                 }
@@ -95,8 +104,7 @@ public class ImageCreatorImpl implements ImageCreator {
         var textarea = step.textarea();
         var position = step.position();
         var fontSize = textarea.fontSize().get(ctx);
-        var font = ctx.resolveFont(textarea.font().get(ctx))
-                .deriveFont(fontSize.floatValue());
+        var font = ctx.resolveFont(textarea.font().get(ctx)).deriveFont(fontSize.floatValue());
         var fontMetrics = g.getFontMetrics(font);
         var text = textarea.text().get(ctx);
         var stringWidth = fontMetrics.stringWidth(text);
@@ -154,19 +162,24 @@ public class ImageCreatorImpl implements ImageCreator {
         }
         g.setColor(COLORS.decodeRGBA(textarea.color().get(ctx)).toColor());
         g.setFont(font);
-        var x = switch(textarea.verticalAlign().get(ctx)) {
-            case "left" -> position.x().get(ctx);
-            case "center" -> position.x().get(ctx) + position.width().get(ctx) / 2 - stringWidth / 2;
-            case "right" -> position.x().get(ctx) + position.width().get(ctx) - stringWidth;
-            default -> throw new IllegalArgumentException("Invalid vertical align: " + textarea.verticalAlign().get(ctx));
-        };
-        var y = switch(textarea.horizontalAlign().get(ctx)) {
-            case "top" -> position.y().get(ctx) + fontMetrics.getAscent();
-            case "center" -> position.y().get(ctx) + position.height().get(ctx) / 2 + fontMetrics.getAscent() / 2;
-            case "bottom" -> position.y().get(ctx) + position.height().get(ctx) - fontMetrics.getDescent();
-            default -> throw new IllegalArgumentException("Invalid horizontal align: " + textarea.horizontalAlign().get(ctx));
-        };
-        //g.drawRect(position.x().get(ctx), position.y().get(ctx), position.width().get(ctx), position.height().get(ctx));
+        // spotless:off
+        var x = switch (textarea.verticalAlign().get(ctx)) {
+                    case "left" -> position.x().get(ctx);
+                    case "center" -> position.x().get(ctx) + position.width().get(ctx) / 2 - stringWidth / 2;
+                    case "right" -> position.x().get(ctx) + position.width().get(ctx) - stringWidth;
+                    default -> throw new IllegalArgumentException("Invalid vertical align: "
+                            + textarea.verticalAlign().get(ctx));
+                };
+        var y = switch (textarea.horizontalAlign().get(ctx)) {
+                    case "top" -> position.y().get(ctx) + fontMetrics.getAscent();
+                    case "center" -> position.y().get(ctx)
+                            + position.height().get(ctx) / 2
+                            + fontMetrics.getAscent() / 2;
+                    case "bottom" -> position.y().get(ctx) + position.height().get(ctx) - fontMetrics.getDescent();
+                    default -> throw new IllegalArgumentException("Invalid horizontal align: "
+                            + textarea.horizontalAlign().get(ctx));
+                };
+        // spotless:on
         g.drawString(text, x, y);
     }
 }

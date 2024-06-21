@@ -5,7 +5,7 @@ import cloud.quinimbus.imagine.template.resolve.source.ResolvableSource;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public final class ResolvableDoubleImpl extends Resolvable<Double> implements ResolvableDouble {
-    
+
     public ResolvableDoubleImpl(JsonNode source) {
         super(source);
     }
@@ -17,7 +17,7 @@ public final class ResolvableDoubleImpl extends Resolvable<Double> implements Re
     public ResolvableDoubleImpl(Double source) {
         super(source);
     }
-    
+
     @Override
     protected Double convert(ResolvableSource source) {
         if (source.isNumber()) {
@@ -41,6 +41,7 @@ public final class ResolvableDoubleImpl extends Resolvable<Double> implements Re
                 return Double.parseDouble(s);
             }
         }
-        throw new IllegalArgumentException("Cannot convert object %s of type %s as double".formatted(source.toString(), source.getClass()));
+        throw new IllegalArgumentException(
+                "Cannot convert object %s of type %s as double".formatted(source.toString(), source.getClass()));
     }
 }

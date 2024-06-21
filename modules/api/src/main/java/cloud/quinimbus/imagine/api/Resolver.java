@@ -4,11 +4,11 @@ import java.util.Optional;
 import java.util.function.Function;
 
 public interface Resolver extends VarResolver, FunctionResolver {
-    
+
     public static Resolver of(VarResolver vr) {
         return of(vr, n -> Optional.empty());
     }
-    
+
     public static Resolver of(VarResolver vr, FunctionResolver fr) {
         return new Resolver() {
             @Override

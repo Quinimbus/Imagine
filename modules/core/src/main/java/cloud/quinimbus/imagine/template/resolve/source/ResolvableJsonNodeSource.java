@@ -3,7 +3,7 @@ package cloud.quinimbus.imagine.template.resolve.source;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ResolvableJsonNodeSource implements ResolvableSource<JsonNode> {
-    
+
     private final JsonNode node;
 
     public ResolvableJsonNodeSource(JsonNode node) {

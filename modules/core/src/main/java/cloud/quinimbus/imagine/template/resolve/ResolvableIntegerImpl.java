@@ -17,7 +17,7 @@ public final class ResolvableIntegerImpl extends Resolvable<Integer> implements 
     public ResolvableIntegerImpl(Integer source) {
         super(source);
     }
-    
+
     @Override
     protected Integer convert(ResolvableSource source) {
         if (source.isNumber()) {
@@ -41,6 +41,7 @@ public final class ResolvableIntegerImpl extends Resolvable<Integer> implements 
                 return Integer.parseInt(s);
             }
         }
-        throw new IllegalArgumentException("Cannot convert object %s of type %s as int".formatted(source.toString(), source.getClass()));
+        throw new IllegalArgumentException(
+                "Cannot convert object %s of type %s as int".formatted(source.toString(), source.getClass()));
     }
 }

@@ -1,9 +1,9 @@
 package cloud.quinimbus.imagine.template.resolve.source;
 
 public class ResolvableNumberSource implements ResolvableSource<Number> {
-    
+
     private final Number number;
-    
+
     public ResolvableNumberSource(Number number) {
         this.number = number;
     }
